@@ -520,10 +520,17 @@ class DumpFlows(RequestHandler):
             def match(_) -> bool:
                 return True
 
+        try:
+            ids: set[str] | None = set(
+                self.request.arguments["ids"][0].decode().split(",")
+            )
+        except (KeyError, IndexError):
+            ids = None
+
         with BytesIO() as bio:
             fw = io.FlowWriter(bio)
             for f in self.view:
-                if match(f):
+                if (ids is None or f.id in ids) and match(f):
                     fw.add(f)
             self.write(bio.getvalue())
 

@@ -12,6 +12,12 @@ export default React.memo(function FileMenu() {
     const filter = useAppSelector(
         (state) => state.ui.filter[FilterName.Search],
     );
+    const selectedIds = useAppSelector((state) =>
+        state.flows.selected.map((f) => f.id).join(","),
+    );
+    const hasSelection = useAppSelector(
+        (state) => state.flows.selected.length > 0,
+    );
     return (
         <Dropdown
             className="pull-left special"
@@ -42,6 +48,20 @@ export default React.memo(function FileMenu() {
                 <Icon name="save" />
                 &nbsp;Save filtered
             </MenuItem>
+            <li style={!hasSelection ? { opacity: 0.4, cursor: "default" } : {}}>
+                <a
+                    href="#"
+                    aria-disabled={!hasSelection}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        if (hasSelection)
+                            location.replace("/flows/dump?ids=" + selectedIds);
+                    }}
+                >
+                    <Icon name="save" />
+                    &nbsp;Save selected
+                </a>
+            </li>
             <MenuItem
                 onClick={() =>
                     confirm("Delete all flows?") &&
